@@ -1,23 +1,4 @@
 services:
-  tls-init:
-    image: alpine/openssl:latest
-    volumes:
-      - tls_certs:/certs
-    command: >
-      sh -c '
-        if [ ! -f /certs/bundle.pem ]; then
-          openssl req -x509 -nodes -newkey rsa:2048
-          -keyout /certs/key.pem
-          -out /certs/cert.pem
-          -days 365
-          -subj "/CN=falcoria" &&
-          cat /certs/cert.pem /certs/key.pem > /certs/bundle.pem &&
-          echo "TLS bundle generated"
-        else
-          echo "TLS bundle already exists, skipping"
-        fi
-      '
-
   postgres:
     image: postgres:16-alpine
     restart: unless-stopped
@@ -39,21 +20,18 @@ services:
     image: ghcr.io/falcoria/scanledger:latest
     restart: unless-stopped
     depends_on:
-      tls-init:
-        condition: service_completed_successfully
       postgres:
         condition: service_healthy
     environment:
       ENVIRONMENT: ${SCANLEDGER_ENVIRONMENT}
       ADMIN_TOKEN: ${SCANLEDGER_ADMIN_TOKEN}
       TASKER_TOKEN: ${SCANLEDGER_TASKER_TOKEN}
-      DATABASE_HOST: postgres
-      DATABASE_PORT: 5432
-      DATABASE_NAME: ${POSTGRES_DB}
-      DATABASE_USER: ${POSTGRES_USER}
-      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - tls_certs:/app/unit:ro
+      - ./certs/bundle.pem:/docker-entrypoint.d/bundle.pem:ro
     ports:
       - "443:443"
 
@@ -92,8 +70,6 @@ services:
     image: ghcr.io/falcoria/tasker:latest
     restart: unless-stopped
     depends_on:
-      tls-init:
-        condition: service_completed_successfully
       scanledger:
         condition: service_started
       redis:
@@ -101,20 +77,23 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
-      ENVIRONMENT: ${TASKER_ENVIRONMENT}
-      SCANLEDGER_BASE_URL: ${TASKER_SCANLEDGER_BASE_URL}
-      SCANLEDGER_TASKER_TOKEN: ${SCANLEDGER_TASKER_TOKEN}
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
-      REDIS_DB: ${REDIS_DB}
-      RABBITMQ_HOST: rabbitmq
-      RABBITMQ_PORT: 5672
-      RABBITMQ_USER: ${RABBITMQ_USER}
-      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
-      RABBITMQ_VHOST: ${RABBITMQ_VHOST}
+      environment: ${TASKER_ENVIRONMENT}
+      postgres_user: ${POSTGRES_USER}
+      postgres_password: ${POSTGRES_PASSWORD}
+      postgres_db: ${POSTGRES_DB}
+      postgres_host: postgres
+      redis_host: redis
+      redis_port: "6379"
+      redis_password: ${REDIS_PASSWORD}
+      redis_db: ${REDIS_DB}
+      rabbitmq_host: rabbitmq
+      rabbitmq_user: ${RABBITMQ_USER}
+      rabbitmq_password: ${RABBITMQ_PASSWORD}
+      rabbitmq_vhost: ${RABBITMQ_VHOST}
+      tasker_auth_token: ${SCANLEDGER_TASKER_TOKEN}
+      scanledger_base_url: ${TASKER_SCANLEDGER_BASE_URL}
     volumes:
-      - tls_certs:/app/unit:ro
+      - ./certs/bundle.pem:/docker-entrypoint.d/bundle.pem:ro
     ports:
       - "8443:443"
 
@@ -127,18 +106,15 @@ services:
       redis:
         condition: service_healthy
     environment:
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
-      REDIS_DB: ${REDIS_DB}
-      RABBITMQ_HOST: rabbitmq
-      RABBITMQ_PORT: 5672
-      RABBITMQ_USER: ${RABBITMQ_USER}
-      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
-      RABBITMQ_VHOST: ${RABBITMQ_VHOST}
+      rabbitmq_user: ${RABBITMQ_USER}
+      rabbitmq_password: ${RABBITMQ_PASSWORD}
+      rabbitmq_host: rabbitmq
+      redis_host: redis
+      redis_pass: ${REDIS_PASSWORD}
+      worker_backend_token: ${WORKER_BACKEND_TOKEN}
+      backend_base_url: ${TASKER_SCANLEDGER_BASE_URL}
 
 volumes:
-  tls_certs:
   postgres_data:
   redis_data:
   rabbitmq_data:

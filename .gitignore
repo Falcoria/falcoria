@@ -16,6 +16,9 @@ __pycache__/
 # Ignore VSCode settings and editor files
 .vscode/
 
+# Ignore generated TLS certs
+certs/
+
 # Ignore app data except tracked placeholders
 app/data/*
 !app/data/.gitkeep
