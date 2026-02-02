@@ -28,7 +28,6 @@ ADMIN_TOKEN=$(tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 30)
 TASKER_TOKEN=$(tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 30)
 REDIS_PASSWORD=$(tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 30)
 RABBITMQ_PASSWORD=$(tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 30)
-WORKER_BACKEND_TOKEN=$(tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 30)
 
 # Update .env file with generated values
 sed -i "s/POSTGRES_PASSWORD=changeme/POSTGRES_PASSWORD=$POSTGRES_PASSWORD/" .env
@@ -36,7 +35,6 @@ sed -i "s/SCANLEDGER_ADMIN_TOKEN=changeme/SCANLEDGER_ADMIN_TOKEN=$ADMIN_TOKEN/" 
 sed -i "s/SCANLEDGER_TASKER_TOKEN=changeme/SCANLEDGER_TASKER_TOKEN=$TASKER_TOKEN/" .env
 sed -i "s/REDIS_PASSWORD=changeme/REDIS_PASSWORD=$REDIS_PASSWORD/" .env
 sed -i "s/RABBITMQ_PASSWORD=changeme/RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD/" .env
-sed -i "s/WORKER_BACKEND_TOKEN=changeme/WORKER_BACKEND_TOKEN=$WORKER_BACKEND_TOKEN/" .env
 
 # Start Docker containers
 echo "Starting Docker containers..."

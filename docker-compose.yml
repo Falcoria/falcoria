@@ -109,10 +109,11 @@ services:
       rabbitmq_user: ${RABBITMQ_USER}
       rabbitmq_password: ${RABBITMQ_PASSWORD}
       rabbitmq_host: rabbitmq
+      rabbitmq_vhost: ${RABBITMQ_VHOST}
       redis_host: redis
       redis_pass: ${REDIS_PASSWORD}
-      worker_backend_token: ${WORKER_BACKEND_TOKEN}
-      backend_base_url: ${TASKER_SCANLEDGER_BASE_URL}
+      worker_backend_token: ${SCANLEDGER_ADMIN_TOKEN}
+      backend_base_url: https://scanledger
 
 volumes:
   postgres_data:
