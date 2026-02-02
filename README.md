@@ -11,15 +11,27 @@ Quick-start Docker Compose setup for running a single-node Falcoria instance.
 - **Redis** — caching and state
 - **RabbitMQ** — message broker between Tasker and Workers
 
-## Getting Started
+## Quick Start
 
-1. Copy the example env file and fill in your secrets:
+Run the quickstart script to generate TLS certificates, secure credentials, and start all services:
+
+```bash
+chmod +x quickstart.sh
+./quickstart.sh
+```
+
+The script will output your admin token — store it securely.
+
+## Manual Setup
+
+1. Generate a TLS bundle and place it in `certs/bundle.pem`.
+2. Copy the example env file and fill in your secrets:
 
 ```bash
 cp .env.example .env
 ```
 
-2. Start all services:
+3. Start all services:
 
 ```bash
 docker compose up -d
