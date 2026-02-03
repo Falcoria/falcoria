@@ -11,6 +11,16 @@ Quick-start Docker Compose setup for running a single-node Falcoria instance.
 - **Redis** — caching and state
 - **RabbitMQ** — message broker between Tasker and Workers
 
+## Requirements
+
+- Docker 20.10+
+- Docker Compose 2.0+
+
+## Ports
+
+- **443** — ScanLedger API
+- **8443** — Tasker API
+
 ## Quick Start
 
 Run the quickstart script to generate TLS certificates, secure credentials, and start all services:
@@ -37,6 +47,10 @@ cp .env.example .env
 docker compose up -d
 ```
 
+## Console Client
+
+After installation, you can use [falcli](https://github.com/Falcoria/falcli) — the console native client to work with Falcoria.
+
 ## Scaling Workers
 
 This setup includes a single worker. For distributed deployments, run additional worker instances on separate hosts pointing to the same RabbitMQ and Redis.
@@ -46,3 +60,4 @@ This setup includes a single worker. For distributed deployments, run additional
 - [ScanLedger](https://github.com/Falcoria/scanledger)
 - [Tasker](https://github.com/Falcoria/tasker)
 - [Worker](https://github.com/Falcoria/worker)
+- [falcli](https://github.com/Falcoria/falcli)
